@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: leaky-invoice
+    env: docker
+    region: oregon
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: LEAKY_INVOICE_DATABASE
+        value: /data/leaky_invoices.db
+      - key: FLASK_ENV
+        value: production
+      # These must be set in Render dashboard:
+      # - LEAKY_INVOICE_FLAG (secret)
+      # - LEAKY_INVOICE_SECRET_KEY (secret)

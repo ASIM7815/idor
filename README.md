@@ -14,7 +14,22 @@ Participants log in as a normal user and must discover a legacy invoice viewer t
 
 ## 🚀 Quick Start
 
-### Using Docker Compose (Recommended)
+### Deploy to Render (Easiest)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+1. Click the button above or go to [Render Dashboard](https://dashboard.render.com)
+2. Connect this GitHub repository
+3. Set environment variables (see [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md))
+4. Deploy!
+
+Required environment variables:
+- `LEAKY_INVOICE_FLAG` - Your CTF flag
+- `LEAKY_INVOICE_SECRET_KEY` - Generate with: `python3 -c "import secrets; print(secrets.token_hex(32))"`
+
+See [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md) for detailed instructions.
+
+### Using Docker Compose (Local/Self-hosted)
 
 ```bash
 # 1. Set up environment
@@ -94,7 +109,8 @@ This CTF challenge includes production-ready features:
 
 ## 📖 Documentation
 
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Comprehensive production deployment guide
+- **[RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)** - Deploy to Render (recommended)
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Self-hosted deployment guide
 - **[nginx.conf.example](nginx.conf.example)** - Nginx reverse proxy configuration
 - **[.env.example](.env.example)** - Environment variable template
 
