@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Login - The Leaky Invoice{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="card auth-card brackets">
+        <span class="auth-scan" aria-hidden="true"></span>
+        <p class="auth-card__eyebrow"><span class="dot" aria-hidden="true"></span> nexus vyoma // staff access terminal</p>
+        <h1 class="glitch" data-text="Login">Login</h1>
+        <p class="subtitle">The Leaky Invoice CTF Challenge</p>
+
+        <form method="POST" class="form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="Enter username" autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter password" autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Login</button>
+        </form>
+
+        <div class="cta">
+            <p class="cursor">handshake with the corporate directory</p>
+            <p>Your mission: work out what a signed-in user in this application is
+               allowed to see, and what they should not be allowed to see.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Legacy record {{ legacy_reference }} - The Leaky Invoice{% endblock %}
+{% block page_class %}page-legacy{% endblock %}
+
+{% block content %}
+<div class="invoice-detail">
+    <div class="header-section">
+        <h1 class="page-title">&#9642; Legacy record {{ legacy_reference }}</h1>
+        <p class="subtitle">Pre-2024 format &mdash; retrieved by legacy reference number.</p>
+    </div>
+
+    <div class="card retro-window invoice-card">
+        <div class="retro-window__bar">
+            <span class="retro-window__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>record {{ legacy_reference }} &mdash; dump</span>
+        </div>
+        <div class="invoice-meta">
+            <div class="meta-row">
+                <span class="label">Legacy reference:</span>
+                <span class="value">{{ legacy_reference }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="label">Invoice number:</span>
+                <span class="value">{{ invoice.invoice_number }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="label">Amount:</span>
+                <span class="value amount">${{ "%.2f"|format(invoice.amount) }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="label">Issue date:</span>
+                <span class="value">{{ invoice.created_at }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="label">Restricted:</span>
+                <span class="value">{{ '🔒 Yes' if invoice.is_private else '✅ No' }}</span>
+            </div>
+        </div>
+
+        <div class="invoice-description">
+            <h3>Description</h3>
+            <p class="description-text">{{ invoice.description }}</p>
+        </div>
+
+        <p class="subtitle">Account holders on this workspace:</p>
+        <ul class="legacy-list colleague-list">
+            {% for name in colleagues %}
+            <li>{{ name }}</li>
+            {% endfor %}
+        </ul>
+
+        <div class="retro-window__foot">end of record &mdash; no local copy on exit</div>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('legacy_viewer_index') }}" class="btn">&larr; Legacy viewer</a>
+        <a href="{{ url_for('dashboard') }}" class="btn">&larr; Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

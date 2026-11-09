@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Error {{ error_code }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin-top: 100px; text-align: center;">
+    <h1>{{ error_code }}</h1>
+    <p class="error-message">{{ error_message }}</p>
+    
+    {% if error_code == 404 %}
+        <p>The page you're looking for doesn't exist.</p>
+    {% elif error_code == 429 %}
+        <p>You've made too many requests. Please wait a moment before trying again.</p>
+    {% elif error_code == 500 %}
+        <p>Something went wrong on our end. We're working to fix it.</p>
+    {% endif %}
+    
+    <div style="margin-top: 30px;">
+        {% if username %}
+            <a href="{{ url_for('dashboard') }}" class="btn">Return to Dashboard</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn">Go to Login</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

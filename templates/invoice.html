@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ invoice.invoice_number }} - The Leaky Invoice{% endblock %}
+
+{% block content %}
+<div class="invoice-detail">
+    <div class="header-section">
+        <p class="eyebrow">current viewer / record detail</p>
+        <h1 class="page-title glitch" data-text="Invoice #{{ invoice.invoice_number }}">Invoice #{{ invoice.invoice_number }}</h1>
+        <p class="subtitle">Issue Date: {{ invoice.created_at }}</p>
+    </div>
+
+    <div class="card invoice-card">
+        <div class="invoice-meta">
+            <div class="meta-row">
+                <span class="label">Reference:</span>
+                <span class="value">{{ invoice.public_id }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="label">Amount:</span>
+                <span class="value amount">${{ "%.2f"|format(invoice.amount) }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="label">Private:</span>
+                <span class="value">{{ '🔒 Yes' if invoice.is_private else '✅ No' }}</span>
+            </div>
+        </div>
+
+        <div class="invoice-description">
+            <h3>Description</h3>
+            <p class="description-text">{{ invoice.description }}</p>
+        </div>
+
+        <p class="legacy-ref-hint">Legacy reference: {{ legacy_reference }}</p>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('dashboard') }}" class="btn">&larr; Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

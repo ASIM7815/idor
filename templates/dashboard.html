@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - The Leaky Invoice{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="header-section">
+        <p class="eyebrow">workspace / {{ username }}</p>
+        <h1 class="page-title glitch" data-text="Your Invoices">Your Invoices</h1>
+        <p class="subtitle">Welcome, {{ username }}! Below are your invoices.</p>
+    </div>
+
+    {% if invoices %}
+    <div class="invoice-grid">
+        {% for invoice in invoices %}
+        <article class="inv-card">
+            <div class="inv-card__top">
+                <span class="inv-card__num">{{ invoice.invoice_number }}</span>
+                <span class="inv-card__date">{{ invoice.created_at }}</span>
+            </div>
+            <div class="inv-card__amount">${{ "%.2f"|format(invoice.amount) }}</div>
+            <p class="inv-card__desc">{{ invoice.description }}</p>
+            <p class="inv-card__ref"><span>DOC-ID</span> {{ invoice.public_id }}</p>
+            <div class="inv-card__foot">
+                <a href="{{ url_for('invoice_detail', public_id=invoice.public_id) }}"
+                   class="btn btn-small">View Details</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <div class="info-box">
+        <h3>Workspace</h3>
+        <p>Shared workspace updates are posted to the notifications page.</p>
+        <p><a href="{{ url_for('notifications') }}">Open notifications</a></p>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No invoices found.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

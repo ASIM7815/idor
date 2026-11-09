@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Legacy Tools Archive - The Leaky Invoice{% endblock %}
+{% block page_class %}page-legacy{% endblock %}
+
+{% block content %}
+<div class="invoice-detail">
+    <div class="header-section">
+        <h1 class="page-title">&#9642; Legacy Tools Archive</h1>
+        <p class="subtitle">Pre-2024 system migration materials</p>
+    </div>
+
+    <div class="card retro-window">
+        <div class="retro-window__bar">
+            <span class="retro-window__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>archive_console v1.2</span>
+        </div>
+        <div class="retro-window__body">
+            <p class="legacy-note">During the 2024 Q1 migration, legacy invoice records
+               from the pre-2024 era were retained in a separate archive viewer while
+               new invoices were assigned opaque public identifiers in the current system.</p>
+
+            <h3>Legacy Reference Convention</h3>
+            <p>
+               Historical records were addressed by legacy reference numbers derived
+               from their invoice number. The convention uses a stable, non-sequential
+               identifier scheme so that reorganisation of invoice ids does not break
+               historical lookups.
+            </p>
+
+            <div class="info-box">
+                <h4>Decoy: Q1 Server Maintenance Record</h4>
+                <p>
+                   Legacy reference: LEG-3a7d2b1f-c8e9-4f2a-b1d5-9e6f2d7c8a4e<br/>
+                   Description: Server maintenance performed on January 2024.<br/>
+                   Amount: $500.00<br/>
+                   This record is from Bob's account and is <b>not</b> the target of the
+                   ongoing migration review. It is included here as a decoy example of
+                   the legacy reference format.
+                </p>
+            </div>
+
+            <h3>Internal Migration Memo (excerpt)</h3>
+            <p>
+               To: Nexus Vyoma Billing Team<br/>
+               From: Migration Ops<br/>
+               Date: 2024-03-01<br/>
+               Subject: Legacy viewer retention<br/><br/>
+
+               The pre-2024 legacy invoice viewer remains available for historical
+               reference during the Q1 migration period. Records addressed by legacy
+               reference numbers will continue to be served through the /legacy/invoice/
+               endpoint. Account holders alice and bob both have historical records
+               in the archive. The migration team is currently reconciling which
+               legacy references correspond to which invoice numbers.<br/><br/>
+
+               Note: Not all legacy references from the old system have been
+               verified against the new invoice numbering. Some records may have
+               been archived without a direct mapping. Treat all legacy references
+               as potentially pointing to records outside the current user-owned
+               set.
+            </p>
+
+            <div class="info-box">
+                <h4>February Reconciliation Entry</h4>
+                <p>
+                   The outstanding Bob account review concerns the February 15, 2024
+                   invoice for $1,337.00. Its invoice number follows the B-series
+                   convention used for Bob's 2024 invoices. The reconciliation
+                   worksheet marks it as the second B-series invoice.
+                </p>
+            </div>
+
+            <h3>Reconciliation Notes</h3>
+            <p>
+               During the migration review, the following observations were made:<br/>
+               - Alice's three invoices (INV-2024-001 through INV-2024-003) have
+                 legacy references that map consistently to the new system.<br/>
+               - Bob's invoices have legacy references following the same convention.<br/>
+               - The legacy viewer addresses records by the original reference number,
+                 without ownership scoping. This is intentional and documented.<br/>
+               - Access to another user's record through the legacy viewer requires
+                 explicit authorization, which has not been implemented in the legacy
+                 code path.<br/>
+               - Participants investigating this workspace should focus on correlating
+                 information from the dashboard, notifications, and archive materials
+                 to identify the target record.
+            </p>
+        </div>
+
+        <div class="retro-window__foot">read-only archive &middot; session active &middot; no timeout</div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Legacy Invoice Viewer - The Leaky Invoice{% endblock %}
+{% block page_class %}page-legacy{% endblock %}
+
+{% block content %}
+<div class="invoice-detail">
+    <div class="header-section">
+        <h1 class="page-title">&#9642; Legacy Invoice Viewer</h1>
+        <p class="subtitle">Pre-2024 records &mdash; retained read-only during the ongoing migration.</p>
+    </div>
+
+    <div class="card retro-window">
+        <div class="retro-window__bar">
+            <span class="retro-window__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>legacy_invoice.exe &mdash; viewer v2.4.1</span>
+        </div>
+        <div class="retro-window__body">
+            <p class="legacy-note">This viewer predates the current invoice system and addresses historical
+               records by their original legacy reference numbers. It is kept available for reference during the
+               migration and is not scheduled for removal at this time.</p>
+
+            <p class="legacy-note">Multiple account holders have historical records in this archive.</p>
+
+            <p class="legacy-note">Open a record by appending its legacy reference number
+               to this viewer's address.</p>
+        </div>
+        <div class="retro-window__foot">read-only console &middot; session active &middot; no timeout</div>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('dashboard') }}" class="btn">&larr; Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Notifications - The Leaky Invoice{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="header-section">
+        <p class="eyebrow">workspace / broadcast channel</p>
+        <h1 class="page-title glitch" data-text="Notifications">Notifications</h1>
+        <p class="subtitle">Shared workspace updates. These are visible to everyone signed in.</p>
+    </div>
+
+    {% if notifications %}
+    <div class="log-feed">
+        {% for item in notifications %}
+        <article class="log-entry">
+            <div class="log-entry__meta">
+                <span class="log-entry__stamp">{{ item.created_at }}</span>
+                <span aria-hidden="true">&bull;</span>
+                <span>workspace broadcast</span>
+            </div>
+            <h2 class="log-entry__title">{{ item.title }}</h2>
+            <div class="log-entry__body">
+                <p>{{ item.body }}</p>
+                {% if item.link_path %}
+                <a class="log-entry__link" href="{{ item.link_path }}">{{ item.reference_label }}</a>
+                {% endif %}
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No notifications.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

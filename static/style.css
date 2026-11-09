@@ -1,0 +1,1230 @@
+/* ==========================================================================
+   NEXUS VYOMA // LEDGER  -  neon-noir interface skin
+   --------------------------------------------------------------------------
+   One stylesheet, two dialects:
+
+     .page-modern  -  the current billing workspace. Glossy neon, cyan/magenta
+                      glow, purple ambient, scanlines, corner brackets.
+     .page-legacy  -  the pre-2024 viewer that nobody decommissioned. Same
+                      palette, drained and boxy: monospace everything, square
+                      corners, hard 1px rules, no glow.
+
+   Decorative only. No behaviour lives here.
+   ========================================================================== */
+
+/* ---------- 1. Tokens --------------------------------------------------- */
+
+:root {
+    --bg: #0a0a12;
+    --bg-deep: #06060d;
+    --panel: rgba(19, 17, 34, 0.88);
+    --panel-solid: #111020;
+    --panel-hi: rgba(30, 24, 52, 0.92);
+
+    --magenta: #ff2e9a;
+    --cyan: #00d9ff;
+    --purple: #8a2be2;
+    --violet-soft: #b07bff;
+
+    --text: #e7e7f4;
+    --muted: #9797bd;
+    --dim: #6b6b90;
+
+    --danger: #ff4d6d;
+    --ok: #3ef0d0;
+
+    --font-display: 'Orbitron', 'Rajdhani', 'Segoe UI', sans-serif;
+    --font-mono: 'Share Tech Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    --font-body: 'Rajdhani', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+
+    --glow-cyan: 0 0 0 1px rgba(0, 217, 255, 0.35), 0 0 18px -4px rgba(0, 217, 255, 0.55);
+    --glow-magenta: 0 0 0 1px rgba(255, 46, 154, 0.35), 0 0 18px -4px rgba(255, 46, 154, 0.55);
+    --shadow-deep: 0 24px 60px -30px rgba(0, 0, 0, 0.95);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+::selection {
+    background: rgba(255, 46, 154, 0.35);
+    color: #fff;
+}
+
+/* ---------- 2. Shell + atmosphere --------------------------------------- */
+
+body {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text);
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(1100px 620px at 12% -10%, rgba(138, 43, 226, 0.30), transparent 62%),
+        radial-gradient(900px 520px at 92% 4%, rgba(255, 46, 154, 0.20), transparent 58%),
+        radial-gradient(800px 700px at 50% 118%, rgba(0, 217, 255, 0.14), transparent 60%),
+        linear-gradient(rgba(0, 217, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(138, 43, 226, 0.045) 1px, transparent 1px),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+    background-size: auto, auto, auto, 46px 46px, 46px 46px, auto;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CRT scanlines + a slow drift, painted over everything, click-through. */
+.scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(to bottom,
+            rgba(0, 0, 0, 0) 0px,
+            rgba(0, 0, 0, 0) 2px,
+            rgba(0, 0, 0, 0.26) 3px,
+            rgba(0, 0, 0, 0.26) 4px);
+    animation: scan-drift 9s linear infinite;
+    opacity: 0.55;
+}
+
+.vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 42%, transparent 55%, rgba(3, 2, 8, 0.72) 100%);
+}
+
+@keyframes scan-drift {
+    from { background-position-y: 0; }
+    to { background-position-y: 160px; }
+}
+
+.container {
+    position: relative;
+    z-index: 10;
+    width: min(1160px, 100%);
+    margin: 0 auto;
+    padding: 2.25rem 1.5rem 3rem;
+    flex: 1;
+}
+
+/* ---------- 3. Chrome: navbar + footer ---------------------------------- */
+
+.navbar {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 1.75rem;
+    background: linear-gradient(180deg, rgba(15, 13, 28, 0.95), rgba(9, 9, 18, 0.80));
+    border-bottom: 1px solid rgba(138, 43, 226, 0.45);
+    box-shadow: 0 14px 40px -28px rgba(255, 46, 154, 0.75);
+    backdrop-filter: blur(6px);
+}
+
+.navbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+    opacity: 0.75;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+}
+
+.brand__glyph {
+    font-size: 1.5rem;
+    color: var(--magenta);
+    text-shadow: 0 0 14px rgba(255, 46, 154, 0.9);
+    animation: pulse-glyph 3.4s ease-in-out infinite;
+}
+
+.brand__name {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.12rem;
+    letter-spacing: 0.22em;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.brand__tag {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    color: var(--dim);
+    text-transform: uppercase;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.nav-user a:not(.btn) {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    text-decoration: none;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 6px;
+    transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+}
+
+.nav-user a:not(.btn):hover {
+    background: rgba(0, 217, 255, 0.12);
+    box-shadow: var(--glow-cyan);
+    color: #fff;
+}
+
+.nav-user__who {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+}
+
+.nav-user__who b {
+    color: var(--violet-soft);
+    font-weight: 400;
+}
+
+.footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 1.6rem 1.5rem 2rem;
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    border-top: 1px solid rgba(138, 43, 226, 0.4);
+    background: linear-gradient(180deg, rgba(9, 9, 18, 0.6), rgba(6, 6, 13, 0.95));
+}
+
+.footer p {
+    margin: 0.3rem 0;
+}
+
+.footer a {
+    color: var(--cyan);
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(0, 217, 255, 0.45);
+}
+
+.footer a:hover {
+    color: #fff;
+    border-bottom-color: var(--magenta);
+}
+
+/* ---------- 4. Typography ------------------------------------------------ */
+
+h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.25;
+}
+
+.page-title {
+    position: relative;
+    display: inline-block;
+    font-size: clamp(1.6rem, 3.4vw, 2.35rem);
+    color: #fff;
+    text-shadow:
+        0 0 14px rgba(0, 217, 255, 0.55),
+        0 0 34px rgba(255, 46, 154, 0.38);
+}
+
+.page-title::after {
+    content: "";
+    display: block;
+    height: 2px;
+    margin-top: 0.65rem;
+    background: linear-gradient(90deg, var(--magenta), var(--purple) 45%, var(--cyan));
+    box-shadow: 0 0 14px rgba(0, 217, 255, 0.7);
+}
+
+.subtitle {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    letter-spacing: 0.06em;
+    margin-top: 0.85rem;
+}
+
+.eyebrow {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--violet-soft);
+    margin-bottom: 0.75rem;
+}
+
+.eyebrow::before {
+    content: "";
+    width: 26px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--magenta));
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 10px var(--ok);
+    animation: pulse-dot 1.9s ease-in-out infinite;
+}
+
+/* Intermittent CSS-only glitch. At rest the pseudo layers are invisible, so
+   the heading stays perfectly readable; the offsets only flash for a few
+   frames at a time. */
+.glitch {
+    position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.glitch::before {
+    color: var(--magenta);
+    animation: glitch-a 7.5s steps(1, end) infinite;
+}
+
+.glitch::after {
+    color: var(--cyan);
+    animation: glitch-b 7.5s steps(1, end) infinite;
+}
+
+@keyframes glitch-a {
+    0%, 86% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 100% 0); }
+    87% { opacity: 0.9; transform: translate(-3px, -1px); clip-path: inset(12% 0 62% 0); }
+    89% { opacity: 0.9; transform: translate(2px, 1px); clip-path: inset(48% 0 26% 0); }
+    91%, 100% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 100% 0); }
+}
+
+@keyframes glitch-b {
+    0%, 88% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 100% 0); }
+    89% { opacity: 0.85; transform: translate(3px, 1px); clip-path: inset(30% 0 45% 0); }
+    91% { opacity: 0.85; transform: translate(-2px, 0); clip-path: inset(70% 0 8% 0); }
+    93%, 100% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 100% 0); }
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.75); }
+}
+
+@keyframes pulse-glyph {
+    0%, 100% { opacity: 1; text-shadow: 0 0 14px rgba(255, 46, 154, 0.9); }
+    50% { opacity: 0.7; text-shadow: 0 0 26px rgba(255, 46, 154, 1); }
+}
+
+@keyframes flicker {
+    0%, 46%, 48%, 51%, 100% { opacity: 1; }
+    47% { opacity: 0.72; }
+    50% { opacity: 0.88; }
+}
+
+@keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+@keyframes sweep {
+    from { transform: translateX(-120%); }
+    to { transform: translateX(220%); }
+}
+
+.neon-flicker { animation: flicker 8s linear infinite; }
+
+.cursor::after {
+    content: "\258C";
+    color: var(--magenta);
+    text-shadow: 0 0 10px var(--magenta);
+    animation: blink 1.15s steps(1, end) infinite;
+    margin-left: 0.15em;
+}
+
+/* ---------- 5. Flash messages ------------------------------------------- */
+
+.flash {
+    position: relative;
+    padding: 0.9rem 1.2rem 0.9rem 1.4rem;
+    margin-bottom: 1.25rem;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    background: rgba(20, 18, 36, 0.9);
+    animation: flicker 6s linear infinite;
+}
+
+.flash::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 8px 0 0 8px;
+}
+
+.flash-error {
+    color: #ffd4dd;
+    border: 1px solid rgba(255, 77, 109, 0.55);
+    box-shadow: 0 0 22px -10px rgba(255, 77, 109, 0.9);
+}
+
+.flash-error::before { background: var(--danger); box-shadow: 0 0 12px var(--danger); }
+
+.flash-info {
+    color: #d6fbff;
+    border: 1px solid rgba(0, 217, 255, 0.45);
+    box-shadow: 0 0 22px -10px rgba(0, 217, 255, 0.9);
+}
+
+.flash-info::before { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+
+/* ---------- 6. Buttons + links ------------------------------------------ */
+
+.btn {
+    position: relative;
+    display: inline-block;
+    padding: 0.68rem 1.35rem;
+    border: 1px solid rgba(0, 217, 255, 0.55);
+    border-radius: 7px;
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.14), rgba(138, 43, 226, 0.16));
+    color: #eafcff;
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.15s, border-color 0.2s, color 0.2s;
+}
+
+.btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 45%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+    transform: translateX(-120%);
+    transition: transform 0.45s ease;
+}
+
+.btn:hover {
+    color: #fff;
+    border-color: var(--magenta);
+    box-shadow: var(--glow-magenta);
+    transform: translateY(-1px);
+}
+
+.btn:hover::after { transform: translateX(220%); }
+
+.btn:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+}
+
+.btn-small { padding: 0.42rem 0.8rem; font-size: 0.7rem; }
+.btn-full { width: 100%; }
+.btn-primary {
+    border-color: var(--magenta);
+    background: linear-gradient(135deg, rgba(255, 46, 154, 0.28), rgba(138, 43, 226, 0.24));
+    box-shadow: 0 0 22px -12px rgba(255, 46, 154, 1);
+}
+
+.btn-primary:hover { border-color: var(--cyan); box-shadow: var(--glow-cyan); }
+
+/* ---------- 7. Panels ---------------------------------------------------- */
+
+.card {
+    position: relative;
+    padding: 1.9rem;
+    margin-bottom: 1.5rem;
+    border-radius: 14px;
+    border: 1px solid rgba(138, 43, 226, 0.38);
+    background:
+        linear-gradient(155deg, rgba(28, 22, 50, 0.92), rgba(11, 12, 24, 0.95));
+    box-shadow:
+        var(--shadow-deep),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 0 40px -26px rgba(255, 46, 154, 0.8);
+}
+
+/* Corner brackets - a pure-CSS nod to the HUD framing. */
+.brackets::before,
+.brackets::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--cyan);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.brackets::before {
+    top: 10px;
+    left: 10px;
+    border-right: 0;
+    border-bottom: 0;
+    border-top-left-radius: 4px;
+}
+
+.brackets::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: 0;
+    border-top: 0;
+    border-bottom-right-radius: 4px;
+}
+
+.info-box {
+    padding: 1.15rem 1.4rem;
+    margin-bottom: 1.5rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 46, 154, 0.4);
+    border-left: 4px solid var(--magenta);
+    background: linear-gradient(90deg, rgba(255, 46, 154, 0.10), rgba(138, 43, 226, 0.06) 60%, transparent);
+}
+
+.info-box h3 {
+    font-size: 0.82rem;
+    color: var(--violet-soft);
+    margin-bottom: 0.4rem;
+}
+
+.info-box p { font-size: 0.95rem; color: var(--muted); }
+.info-box p + p { margin-top: 0.35rem; }
+
+.info-box a,
+.panel-link {
+    color: var(--cyan);
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(0, 217, 255, 0.5);
+}
+
+.info-box a:hover,
+.panel-link:hover { color: #fff; border-bottom-color: var(--magenta); }
+
+.empty-state {
+    padding: 2.5rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    color: var(--dim);
+    border: 1px dashed rgba(138, 43, 226, 0.45);
+    border-radius: 12px;
+}
+
+/* ---------- 8. Login ---------------------------------------------------- */
+
+.auth-container {
+    width: min(460px, 100%);
+    margin: 3.5rem auto;
+}
+
+.auth-card {
+    padding: 2.25rem;
+    overflow: hidden;
+}
+
+.auth-scan {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.auth-card h1 {
+    font-size: 1.9rem;
+    color: #fff;
+    text-shadow: 0 0 16px rgba(255, 46, 154, 0.55), 0 0 38px rgba(0, 217, 255, 0.35);
+}
+
+.auth-card__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 1rem;
+}
+
+.auth-card .subtitle {
+    font-size: 0.74rem;
+    color: var(--dim);
+    margin: 0.55rem 0 1.75rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.form-group label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--violet-soft);
+}
+
+.form-group label::before {
+    content: "> ";
+    color: var(--magenta);
+}
+
+.form-group input {
+    padding: 0.8rem 0.95rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 217, 255, 0.28);
+    background: rgba(6, 8, 18, 0.85);
+    color: #eafcff;
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.form-group input::placeholder {
+    color: rgba(151, 151, 189, 0.55);
+    letter-spacing: 0.02em;
+}
+
+.form-group input:hover { border-color: rgba(0, 217, 255, 0.5); }
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--magenta);
+    background: rgba(10, 6, 20, 0.95);
+    box-shadow:
+        0 0 0 1px rgba(255, 46, 154, 0.6),
+        0 0 18px -2px rgba(255, 46, 154, 0.75),
+        0 0 34px -12px rgba(0, 217, 255, 0.9);
+}
+
+.cta {
+    margin-top: 1.75rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: 8px;
+    border: 1px dashed rgba(138, 43, 226, 0.55);
+    background: rgba(138, 43, 226, 0.08);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.75;
+    color: var(--muted);
+}
+
+/* ---------- 9. Dashboard: neon invoice cards ----------------------------- */
+
+.dashboard .header-section { margin-bottom: 2rem; }
+
+.invoice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.inv-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1.35rem 1.45rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(138, 43, 226, 0.45);
+    background:
+        linear-gradient(160deg, rgba(28, 22, 50, 0.9), rgba(10, 11, 22, 0.94));
+    box-shadow: var(--shadow-deep), 0 0 34px -24px rgba(0, 217, 255, 0.9);
+    transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+
+.inv-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 3px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, var(--magenta), var(--purple), var(--cyan));
+    box-shadow: 0 0 12px rgba(255, 46, 154, 0.7);
+}
+
+.inv-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0, 217, 255, 0.6);
+    box-shadow: var(--shadow-deep), 0 0 36px -18px rgba(0, 217, 255, 1);
+}
+
+.inv-card__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+.inv-card__num {
+    font-family: var(--font-mono);
+    font-size: 1.02rem;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+    text-shadow: 0 0 12px rgba(0, 217, 255, 0.55);
+    word-break: break-all;
+}
+
+.inv-card__date {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--dim);
+    white-space: nowrap;
+}
+
+.inv-card__amount {
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 18px rgba(62, 240, 208, 0.5);
+}
+
+.inv-card__desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.inv-card__ref {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    color: var(--violet-soft);
+    padding: 0.4rem 0.55rem;
+    border: 1px dashed rgba(138, 43, 226, 0.6);
+    border-radius: 6px;
+    background: rgba(8, 6, 18, 0.7);
+    word-break: break-all;
+}
+
+.inv-card__ref span {
+    color: var(--dim);
+    letter-spacing: 0.14em;
+}
+
+.inv-card__foot {
+    margin-top: auto;
+    padding-top: 0.35rem;
+}
+
+/* ---------- 10. Invoice detail ------------------------------------------ */
+
+.invoice-detail .header-section { margin-bottom: 2rem; }
+
+.invoice-card { padding: 0; overflow: hidden; }
+
+.invoice-meta {
+    padding: 1.4rem 1.75rem;
+    border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+    background: rgba(8, 8, 18, 0.5);
+}
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px dashed rgba(122, 106, 176, 0.28);
+}
+
+.meta-row:last-child { border-bottom: none; }
+
+.meta-row .label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+}
+
+.meta-row .value {
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    color: var(--text);
+    text-align: right;
+    word-break: break-all;
+}
+
+.meta-row .amount {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--ok);
+    text-shadow: 0 0 16px rgba(62, 240, 208, 0.55);
+}
+
+.invoice-description {
+    padding: 1.6rem 1.75rem;
+}
+
+.invoice-description h3 {
+    font-size: 0.74rem;
+    letter-spacing: 0.2em;
+    color: var(--magenta);
+    margin-bottom: 0.8rem;
+}
+
+.description-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text);
+}
+
+/* The clue stays on the page - now dressed as a terminal tag. */
+.legacy-ref-hint {
+    margin: 0 1.75rem 1.6rem;
+    padding: 0.55rem 0.85rem;
+    display: inline-block;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 217, 255, 0.4);
+    background: rgba(0, 217, 255, 0.07);
+    box-shadow: inset 0 0 18px -10px rgba(0, 217, 255, 0.9);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.45);
+}
+
+.actions {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+/* ---------- 11. Notifications: terminal log feed ------------------------- */
+
+.log-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.log-entry {
+    position: relative;
+    padding: 1.1rem 1.35rem 1.2rem;
+    border-radius: 10px;
+    border: 1px solid rgba(138, 43, 226, 0.38);
+    border-left: 3px solid var(--magenta);
+    background: linear-gradient(120deg, rgba(26, 20, 46, 0.85), rgba(10, 11, 22, 0.92));
+    box-shadow: var(--shadow-deep), 0 0 30px -24px rgba(255, 46, 154, 0.9);
+}
+
+.log-entry::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--magenta);
+    box-shadow: 0 0 12px var(--magenta);
+    animation: pulse-dot 2.6s ease-in-out infinite;
+}
+
+.log-entry__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+}
+
+.log-entry__stamp {
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.log-entry__title {
+    margin: 0.55rem 1.4rem 0.45rem 0;
+    font-size: 1rem;
+    color: #fff;
+    text-shadow: 0 0 14px rgba(138, 43, 226, 0.7);
+}
+
+.log-entry__body {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.log-entry__body p { margin: 0 0 0.55rem; }
+
+.log-entry__link {
+    display: inline-block;
+    margin-top: 0.2rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 217, 255, 0.45);
+    background: rgba(0, 217, 255, 0.08);
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    transition: box-shadow 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.log-entry__link::before { content: "▸ "; color: var(--magenta); }
+
+.log-entry__link:hover {
+    color: #fff;
+    border-color: var(--magenta);
+    box-shadow: var(--glow-magenta);
+}
+
+/* ---------- 12. Legacy dialect ------------------------------------------ */
+/* Same neon palette, drained down to what the hardware allowed in 2019. */
+
+.page-legacy {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.65;
+    background-image:
+        radial-gradient(900px 500px at 50% -10%, rgba(0, 217, 255, 0.10), transparent 60%),
+        radial-gradient(700px 500px at 50% 110%, rgba(255, 46, 154, 0.10), transparent 62%),
+        linear-gradient(rgba(0, 217, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 217, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(180deg, #08080f 0%, #05050b 100%);
+    background-size: auto, auto, 34px 34px, 34px 34px, auto;
+}
+
+.page-legacy .scanlines { opacity: 0.8; }
+
+.page-legacy .navbar {
+    border-bottom: 1px solid rgba(0, 217, 255, 0.3);
+    box-shadow: none;
+    background: #0b0b14;
+}
+
+.page-legacy .navbar::after { display: none; }
+.page-legacy .brand__glyph { color: #4ad6b8; text-shadow: none; animation: none; }
+.page-legacy .brand__name { font-family: var(--font-mono); font-weight: 400; letter-spacing: 0.12em; font-size: 1rem; }
+.page-legacy .brand__tag { color: #5c6b74; }
+
+.page-legacy .nav-user a:not(.btn) {
+    border-radius: 0;
+    color: #35c4d8;
+    border-color: rgba(0, 217, 255, 0.35);
+    background: transparent;
+}
+
+.page-legacy .nav-user a:not(.btn):hover { background: rgba(0, 217, 255, 0.08); box-shadow: none; color: #9beeff; }
+.page-legacy .nav-user__who { color: #6d7a86; }
+.page-legacy .nav-user__who b { color: #57e0c4; }
+
+.page-legacy .container { width: min(880px, 100%); }
+
+.page-legacy .page-title {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    font-size: 1.45rem;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.35);
+}
+
+.page-legacy .page-title::after {
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--cyan) 0 6px, transparent 6px 12px);
+    box-shadow: none;
+}
+
+.page-legacy .subtitle { color: #6d7a86; font-size: 0.76rem; letter-spacing: 0.08em; }
+.page-legacy .glitch::before,
+.page-legacy .glitch::after { display: none; }
+
+.page-legacy .card {
+    border-radius: 0;
+    border: 1px solid rgba(0, 217, 255, 0.35);
+    background: #0c0c16;
+    box-shadow: inset 0 0 60px -30px rgba(0, 217, 255, 0.35);
+    padding: 1.5rem;
+}
+
+.page-legacy .brackets::before,
+.page-legacy .brackets::after {
+    border: 0;
+    width: 0;
+    height: 0;
+}
+
+.page-legacy .btn {
+    border-radius: 0;
+    border: 1px solid rgba(0, 217, 255, 0.45);
+    background: #10101c;
+    color: #8fe9f8;
+    box-shadow: none;
+}
+
+.page-legacy .btn::after { display: none; }
+
+.page-legacy .btn:hover {
+    background: #14202c;
+    border-color: #ff2e9a;
+    color: #ffd7ec;
+    box-shadow: none;
+    transform: none;
+}
+
+.page-legacy .meta-row { border-bottom: 1px dotted rgba(0, 217, 255, 0.22); }
+.page-legacy .meta-row .label { color: #5f7a86; }
+.page-legacy .meta-row .value { color: #bfe9f5; }
+.page-legacy .meta-row .amount { font-family: var(--font-mono); color: #57e0c4; text-shadow: none; font-size: 1.05rem; }
+
+.page-legacy .invoice-meta {
+    background: #090910;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.25);
+    padding: 1rem 1.35rem;
+}
+
+.page-legacy .invoice-description { padding: 1.25rem 1.35rem; }
+
+.page-legacy .invoice-description h3 {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    color: #57e0c4;
+    letter-spacing: 0.16em;
+}
+
+.page-legacy .description-text {
+    font-size: 0.92rem;
+    color: #cfe6ee;
+    background: #08080f;
+    border: 1px dotted rgba(0, 217, 255, 0.25);
+    padding: 0.7rem 0.8rem;
+}
+
+.page-legacy .legacy-ref-hint {
+    margin: 0 1.35rem 1.35rem;
+    border-radius: 0;
+    border: 1px dotted rgba(255, 46, 154, 0.5);
+    background: rgba(255, 46, 154, 0.06);
+    color: #ff8ac4;
+    text-shadow: none;
+    box-shadow: none;
+}
+
+.page-legacy .footer {
+    border-top: 1px dashed rgba(0, 217, 255, 0.3);
+    background: #07070e;
+    color: #55636e;
+}
+
+.page-legacy .footer a { color: #35c4d8; border-bottom-style: dashed; }
+
+/* Retro window chrome for the old viewer. */
+.retro-window {
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 1.5rem;
+}
+
+.retro-window__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.8rem;
+    background: #12121f;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.3);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #7f95a2;
+}
+
+.retro-window__dots {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.retro-window__dots i {
+    width: 8px;
+    height: 8px;
+    display: block;
+    border: 1px solid rgba(0, 217, 255, 0.5);
+}
+
+.retro-window__body { padding: 1.5rem; }
+
+.retro-window__foot {
+    padding: 0.4rem 0.8rem;
+    border-top: 1px dotted rgba(0, 217, 255, 0.25);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    color: #4f5b66;
+    text-transform: uppercase;
+}
+
+.legacy-note {
+    font-size: 0.82rem;
+    color: #8aa4b0;
+    margin-bottom: 0.9rem;
+}
+
+.legacy-note + .legacy-note { margin-top: 0.75rem; }
+
+.legacy-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.6rem;
+    margin: 0.55rem 0 1.25rem;
+}
+
+.legacy-list li {
+    padding: 0.2rem 0.55rem;
+    border: 1px solid rgba(0, 217, 255, 0.35);
+    background: #0a0a14;
+    color: #8fe9f8;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+}
+
+.legacy-code {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border: 1px solid rgba(255, 46, 154, 0.5);
+    background: rgba(255, 46, 154, 0.08);
+    color: #ff9ccd;
+}
+
+.retro-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+}
+
+.retro-table th,
+.retro-table td {
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+    border-bottom: 1px dotted rgba(0, 217, 255, 0.22);
+}
+
+.retro-table th {
+    color: #5f7a86;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.66rem;
+}
+
+/* ---------- 13. Responsive + motion opt-out ----------------------------- */
+
+@media (max-width: 820px) {
+    body { font-size: 16px; }
+
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.9rem;
+        padding: 0.9rem 1.1rem;
+    }
+
+    .container { padding: 1.5rem 1.1rem 2.5rem; }
+    .card { padding: 1.35rem; }
+    .auth-card { padding: 1.5rem; }
+    .auth-container { margin: 2rem auto; }
+
+    .invoice-grid { grid-template-columns: 1fr; }
+
+    .meta-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+    }
+
+    .meta-row .value { text-align: left; }
+
+    .actions .btn { flex: 1 1 100%; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+
+    .scanlines { animation: none; }
+}

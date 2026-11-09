@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a12">
+    <title>{% block title %}The Leaky Invoice{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="{% block page_class %}page-modern{% endblock %}">
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <nav class="navbar">
+        <a class="brand" href="{{ url_for('dashboard') }}">
+            <span class="brand__glyph" aria-hidden="true">&#9672;</span>
+            <span>
+                <span class="brand__name glitch neon-flicker" data-text="Nexus Vyoma Ledger">Nexus Vyoma Ledger</span>
+                <span class="brand__tag">financial systems &middot; invoice division</span>
+            </span>
+        </a>
+        {% if session.username is defined %}
+        <div class="nav-user">
+            <a href="{{ url_for('notifications') }}">Notifications</a>
+            <span class="nav-user__who">Logged in as: <b>{{ session.username }}</b></span>
+            <a href="{{ url_for('logout') }}" class="btn btn-small">Logout</a>
+        </div>
+        {% endif %}
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}" role="status">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>NEXUS VYOMA Holdings &middot; internal billing network &middot; node <span id="sys-clock">--:--:--</span></p>
+        <p>Internal training application. Run locally at 127.0.0.1 - do not expose to the internet.</p>
+        {% if session.username is defined %}
+        <p><a href="{{ url_for('legacy_viewer_index') }}">Legacy tools</a></p>
+        {% endif %}
+        <p>The Leaky Invoice &mdash; Security Training Lab</p>
+    </footer>
+
+    <script>
+        // Decorative only: renders a local clock. No network calls, no storage,
+        // no cookie access.
+        (function () {
+            var node = document.getElementById('sys-clock');
+            if (!node) { return; }
+            var tick = function () {
+                var now = new Date();
+                var parts = [now.getHours(), now.getMinutes(), now.getSeconds()]
+                    .map(function (n) { return String(n).padStart(2, '0'); });
+                node.textContent = parts.join(':');
+            };
+            tick();
+            window.setInterval(tick, 1000);
+        })();
+    </script>
+</body>
+</html>

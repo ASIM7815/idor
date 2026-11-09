@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    image: leaky-invoice:latest
+    container_name: leaky-invoice
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - LEAKY_INVOICE_FLAG=${LEAKY_INVOICE_FLAG}
+      - LEAKY_INVOICE_SECRET_KEY=${LEAKY_INVOICE_SECRET_KEY}
+      - LEAKY_INVOICE_DATABASE=/data/leaky_invoices.db
+    volumes:
+      - invoice-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health').read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - invoice-network
+
+volumes:
+  invoice-data:
+    driver: local
+
+networks:
+  invoice-network:
+    driver: bridge
